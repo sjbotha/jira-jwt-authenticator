@@ -19,8 +19,8 @@ Use maven or NetBeans to build the project with this command:
             </init-param>
             <init-param>
                 <param-name>jwt.token.param.name</param-name>
-                <param-value>jwt</param-value>
-        </init-param>
+                <param-value>dvjwt</param-value>
+            </init-param>
             <!-- set this to require a specific issuer -->
             <init-param>
                 <param-name>jwt.verify.issuer</param-name>
