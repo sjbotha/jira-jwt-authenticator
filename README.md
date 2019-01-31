@@ -12,26 +12,26 @@ Use maven or NetBeans to build the project with this command:
 
 2. Edit /opt/jira-core/atlassian-jira/WEB-INF/classes/seraph-config.xml and comment out the authenticator tag and add our own authenticator instead like this:
 
-    <authenticator class="com.docuvantage.atlassian.seraph.JiraJwtAuthenticator">
-        <init-param>
-            <param-name>jwt.shared.secret</param-name>
-            <param-value>your-256-bit-secret</param-value>
+        <authenticator class="com.docuvantage.atlassian.seraph.JiraJwtAuthenticator">
+            <init-param>
+                <param-name>jwt.shared.secret</param-name>
+                <param-value>your-256-bit-secret</param-value>
+            </init-param>
+            <init-param>
+                <param-name>jwt.token.param.name</param-name>
+                <param-value>jwt</param-value>
         </init-param>
-        <init-param>
-            <param-name>jwt.token.param.name</param-name>
-            <param-value>jwt</param-value>
-       </init-param>
-        <!-- set this to require a specific issuer -->
-        <init-param>
-            <param-name>jwt.verify.issuer</param-name>
-            <param-value></param-value>
-        </init-param>
-        <!-- set the leeway in number of seconds -->
-        <init-param>
-            <param-name>jwt.leeway</param-name>
-            <param-value>120</param-value>
-        </init-param>
-    </authenticator>
+            <!-- set this to require a specific issuer -->
+            <init-param>
+                <param-name>jwt.verify.issuer</param-name>
+                <param-value></param-value>
+            </init-param>
+            <!-- set the leeway in number of seconds -->
+            <init-param>
+                <param-name>jwt.leeway</param-name>
+                <param-value>120</param-value>
+            </init-param>
+        </authenticator>
 
 3. Stop and start the Jira service
 
