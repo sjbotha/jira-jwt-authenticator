@@ -36,10 +36,10 @@ This is the home of the JWT Authenticator for Atlassian Seraph
 # Testing
 
 Generate a test token from this page: https://jwt.io
-Generating Token
 
-# Write the code on your platform of choice to generate the token. Here is an example written in Java:
+# Generating Token
 
+Write the code on your platform of choice to generate the token. Here is an example written in Java:
 
     Algorithm algorithm = Algorithm.HMAC256("your-256-bit-secret");
     String token = JWT.create()
