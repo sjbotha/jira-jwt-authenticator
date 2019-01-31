@@ -1,15 +1,17 @@
 This is the home of the JWT Authenticator for Atlassian Seraph
 
+With this you can setup SSO between another application and Jira applications. On the other system you generate a JSON Web Token, then redirect users to the Jira application where they are logged in automatically. This Authenticator will also automatically create a user if a user does not already exist. This makes sense for use with the Service Desk application.
 
 # Building and Installing
 
-    Download the code from here:
+Use maven or NetBeans to build the project with this command:
 
-    Use maven or NetBeans to build the project with this command:
     mvn package
-    Copy the jars in target and target/deps to /opt/jira-core/atlassian-jira/WEB-INF/lib
 
-    Edit /opt/jira-core/atlassian-jira/WEB-INF/classes/seraph-config.xml and comment out the authenticator tag and add our own authenticator instead like this:
+1. Copy the jars in target and target/deps to /opt/jira-core/atlassian-jira/WEB-INF/lib
+
+2. Edit /opt/jira-core/atlassian-jira/WEB-INF/classes/seraph-config.xml and comment out the authenticator tag and add our own authenticator instead like this:
+
     <authenticator class="com.docuvantage.atlassian.seraph.JiraJwtAuthenticator">
         <init-param>
             <param-name>jwt.shared.secret</param-name>
@@ -17,7 +19,7 @@ This is the home of the JWT Authenticator for Atlassian Seraph
         </init-param>
         <init-param>
             <param-name>jwt.token.param.name</param-name>
-            <param-value>dvjwt</param-value>
+            <param-value>jwt</param-value>
        </init-param>
         <!-- set this to require a specific issuer -->
         <init-param>
@@ -27,36 +29,19 @@ This is the home of the JWT Authenticator for Atlassian Seraph
         <!-- set the leeway in number of seconds -->
         <init-param>
             <param-name>jwt.leeway</param-name>
-            <param-value>dvjwt</param-value>
+            <param-value>120</param-value>
         </init-param>
     </authenticator>
-    Stop and start the Jira service
-    Change the secret and make sure the same secret is used on the DVOD server in config.ini
+
+3. Stop and start the Jira service
+
+4. Change the secret and make sure the same secret is used on the DVOD server in config.ini
 
 # Testing
 
-Generate a test token from this page: https://jwt.io
+To test that you have configured the Authenticator correctly generate a test token from this page: https://jwt.io
 
-# Generating Token
-
-Write the code on your platform of choice to generate the token. Here is an example written in Java:
-
-    Algorithm algorithm = Algorithm.HMAC256("your-256-bit-secret");
-    String token = JWT.create()
-        .withIssuer("DVOD-data1")
-        .withClaim("email", user.getEmailAddress())
-        .withSubject(user.getFullName())
-        .withExpiresAt(DateTime.now().plusSeconds(60).toDate())
-        .sign(algorithm);
-
-The java sample uses this dependency:
-
-       <dependency>
-           <groupId>com.auth0</groupId>
-           <artifactId>java-jwt</artifactId>
-           <version>3.6.0</version>
-       </dependency>
-
+And then try to use it like this: https://jira.example.com/jira/servicedesk/customer/portal/1?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJEVk9ELWRhdGExIiwic3ViIjoidGVzdDJAZG9jdXZhbnRhZ2UuY29tIiwiaWF0IjoxNTE2MjM5MDIyLCJuYW1lIjoiVGVzdDIgVGVzdDIifQ.7JIu6QSp2s3PFPVQoGC6nujFbCqrgcBNahQQI762MYc
 
 # Troubleshooting
 
@@ -69,7 +54,29 @@ View the log file here:
 
     less /opt/jira-core/logs/catalina.out
 
-# CREDITS
+# Generating Token Yourself
+
+Write the code on your platform of choice to generate the token. Here is an example written in Java:
+
+    Algorithm algorithm = Algorithm.HMAC256("your-256-bit-secret");
+    String token = JWT.create()
+        .withIssuer("DVOD-data1")
+        .withClaim("email", user.getEmailAddress())
+        .withSubject(user.getFullName())
+        .withExpiresAt(DateTime.now().plusSeconds(60).toDate())
+        .sign(algorithm);
+    response.sendRedirect("https://jira.example.com/jira/servicedesk/customer/portal/1?jwt="+token);
+
+The java sample uses this dependency:
+
+       <dependency>
+           <groupId>com.auth0</groupId>
+           <artifactId>java-jwt</artifactId>
+           <version>3.6.0</version>
+       </dependency>
+
+# Credits
+
 https://docs.atlassian.com/atlassian-seraph/2.6.1-m1/sso.html?_ga=2.253651081.1448579665.1548708514-509546532.1547576944
 
 Derek Jarvis' write-up here: https://www.jarvispowered.com/single-sign-on-to-jira-with-siteminder/
