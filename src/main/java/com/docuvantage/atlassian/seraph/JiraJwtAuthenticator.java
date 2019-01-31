@@ -77,7 +77,7 @@ public class JiraJwtAuthenticator extends com.atlassian.jira.security.login.Jira
                     log.debug("Trying verifyToken");
                     String token = request.getParameter(tokenParamName);
                     if (Strings.isNullOrEmpty(token)) {
-                        log.debug("No request parameter dvjwt so not trying JWT auth");
+                        log.debug("No request parameter " + tokenParamName + " so not trying JWT auth");
                     } else {
                         MyUser verifiedUser = verifyToken(token);
                         log.debug("verifiedLogin=" + verifiedUser);
