@@ -65,9 +65,12 @@ public class JiraJwtAuthenticator extends com.atlassian.jira.security.login.Jira
         log.debug("getUser() requestURL=" + request.getRequestURL() + " " + request.getQueryString());
 
         Principal princ = null;
-        if (request.getSession() != null && request.getSession().getAttribute(DefaultAuthenticator.LOGGED_IN_KEY) != null) {
+
+        if (request.getSession(false) != null && request.getSession().getAttribute(DefaultAuthenticator.LOGGED_IN_KEY) != null) {
             log.debug("Session found; user already logged in");
             princ = (Principal) request.getSession().getAttribute(DefaultAuthenticator.LOGGED_IN_KEY);
+            log.debug("returning princ " + princ);
+            return princ;
         } else {
             // TODO check path of request and only work on service desk portal
             if (Strings.isNullOrEmpty(sharedSecret)) {
@@ -111,11 +114,22 @@ public class JiraJwtAuthenticator extends com.atlassian.jira.security.login.Jira
                 }
             }
         }
-        log.debug("calling super.getUser");
-        Principal superGetUser = super.getUser(request, response);
-        log.debug("superGetUser=" + superGetUser);
-        return superGetUser;
 
+        try {
+            log.debug("calling super.getUser");
+            Principal superGetUser = super.getUser(request, response);
+            log.debug("superGetUser=" + superGetUser);
+            if (superGetUser != null) {
+                log.debug("returning superGetUser");
+                return superGetUser;
+            }
+        } catch (NullPointerException ex) {
+            log.debug("Ignoring NPE thrown in super.getUser(). Suspect a bug in their code.");
+        } catch (Exception ex) {
+            log.error("Error in super.getUser()", ex);
+        }
+
+        return princ;
     }
 
     MyUser verifyToken(String token) {
