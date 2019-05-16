@@ -143,7 +143,7 @@ public class JiraJwtAuthenticator extends com.atlassian.jira.security.login.Jira
         log.debug("subject=" + jwt.getSubject());
         log.debug("iat=" + jwt.getIssuedAt());
         Claim name = jwt.getClaim("name");
-        final String email = jwt.getSubject();
+        final String email = jwt.getClaim("email").asString();
         return new MyUser(name.asString(), email);
     }
 

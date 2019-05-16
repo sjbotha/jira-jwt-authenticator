@@ -42,17 +42,15 @@ public class JiraJwtAuthenticatorTest {
     @org.junit.Test
     public void testVerifyToken() {
         System.out.println("verifyToken");
-//        {
-//  "iss":"DVOD-data1",
-//  "sub": "sareljbotha@gmail.com",
-//  "iat": 1516239022
-//}
+
         JiraJwtAuthenticator instance = new JiraJwtAuthenticator();
         instance.sharedSecret = "your-256-bit-secret";
 
         try {
-            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJEVk9ELWRhdGExIiwic3ViIjoic2FyZWxqYm90aGFAZ21haWwuY29tIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjJ9.1oLW7_yEsaDyy2R2hFCZ9U0icUOJO-PFY2YmlVodM6A";
-            String expResult = "sareljbotha@gmail.com";
+            // this token expired long ago so should fail
+            // { "iss": "DVOD-data1", "sub": "asdf@example.com", "iat":1516239022, "exp": 1516239022 }
+            String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJEVk9ELWRhdGExIiwic3ViIjoiYXNkZkBleGFtcGxlLmNvbSIsImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNTE2MjM5MDIyfQ.UguAAtEh3wSmzixzGxYR3EsxGYWvSpgJBwCUu0THIeg";
+            String expResult = "asdf@example.com";
             MyUser result = instance.verifyToken(token);
             Assert.assertEquals(expResult, result.email);
             fail("should have failed this token");
@@ -61,10 +59,11 @@ public class JiraJwtAuthenticatorTest {
             System.out.println("Threw error for expired token - pass");
         }
 
-        String expResult = "sareljbotha@gmail.com";
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJEVk9ELWRhdGExIiwic3ViIjoic2FyZWxqYm90aGFAZ21haWwuY29tIiwiaWF0IjoxNTE2MjM5MDIyfQ.8qf1IuHwAbH8eDm4Y5I5NtUY3KSBXvnhj1burP6XlR0";
+        // {"iss": "DVOD-data1","sub": "asdf@example.com","email": "asdf@example.com","name": "John Doe","iat":1516239022}
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJEVk9ELWRhdGExIiwic3ViIjoiYXNkZkBleGFtcGxlLmNvbSIsImVtYWlsIjoiYXNkZkBleGFtcGxlLmNvbSIsIm5hbWUiOiJKb2huIERvZSIsImlhdCI6MTUxNjIzOTAyMn0.cpcfFaLl3LfcRrcpDYtFKZcFmDeuTYPtB5iqiommELI";
         MyUser result = instance.verifyToken(token);
-        Assert.assertEquals(expResult, result.email);
+        Assert.assertEquals("asdf@example.com", result.email);
+        Assert.assertEquals("John Doe", result.fullName);
         System.out.println("Token verified - pass");
     }
 
